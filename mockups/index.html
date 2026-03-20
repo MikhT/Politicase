@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Politicase — Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B365D;
+    --primary-light: #2A4A7F;
+    --secondary: #C8102E;
+    --bg: #F4F1EC;
+    --surface: #FFFFFF;
+    --text: #1A1A2E;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --success: #059669;
+    --warning: #D97706;
+    --danger: #DC2626;
+    /* Party colors */
+    --fdi: #F28C28;
+    --pd: #E2001A;
+    --m5s: #FFD700;
+    --lega: #008C45;
+    --fi: #0087DC;
+    --azione: #1E3A5F;
+    --avs: #4CAF50;
+    --iv: #FF69B4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(27, 54, 93, 0.97);
+    backdrop-filter: blur(12px);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .nav-logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--secondary); }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover, .nav-links a.active { color: #fff; }
+
+  .nav-search {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    gap: 0.5rem;
+    width: 220px;
+  }
+  .nav-search input {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 0.85rem;
+    outline: none;
+    width: 100%;
+  }
+  .nav-search input::placeholder { color: rgba(255,255,255,0.5); }
+  .nav-search svg { opacity: 0.5; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #0F2240 100%);
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+  .hero h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.75rem;
+    letter-spacing: -1px;
+    position: relative;
+  }
+  .hero h1 span { color: var(--secondary); }
+  .hero p {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.15rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    position: relative;
+  }
+
+  .hero-search {
+    max-width: 560px;
+    margin: 0 auto 2rem;
+    position: relative;
+  }
+  .hero-search input {
+    width: 100%;
+    padding: 1rem 1.5rem 1rem 3rem;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 1.05rem;
+    outline: none;
+    transition: border-color 0.2s;
+    backdrop-filter: blur(4px);
+  }
+  .hero-search input:focus { border-color: rgba(255,255,255,0.5); }
+  .hero-search input::placeholder { color: rgba(255,255,255,0.5); }
+  .hero-search .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.5);
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    position: relative;
+  }
+  .hero-stat {
+    text-align: center;
+  }
+  .hero-stat-num {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .hero-stat-label {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* SECTIONS */
+  .section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+  }
+  .section-link {
+    font-size: 0.85rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  /* SPOTLIGHT CARDS */
+  .spotlight-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+  }
+  .spotlight-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .spotlight-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+  .spotlight-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 0.75rem;
+    background: linear-gradient(135deg, #ddd, #bbb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #fff;
+    font-weight: 700;
+    overflow: hidden;
+  }
+  .spotlight-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .spotlight-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.15rem;
+  }
+  .party-badge {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.75rem;
+  }
+
+  /* GAUGE */
+  .gauge-container {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    margin: 0.5rem auto;
+  }
+  .gauge-svg {
+    transform: rotate(-90deg);
+  }
+  .gauge-bg {
+    fill: none;
+    stroke: #E5E7EB;
+    stroke-width: 6;
+  }
+  .gauge-fill {
+    fill: none;
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.5s ease;
+  }
+  .gauge-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .gauge-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .gauge-label {
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .gauge-delta {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.25rem;
+  }
+  .delta-up { color: var(--success); }
+  .delta-down { color: var(--danger); }
+
+  /* PARTY BAR CHART */
+  .party-bars {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .party-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .party-bar-row:last-child { margin-bottom: 0; }
+  .party-bar-name {
+    width: 100px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: right;
+  }
+  .party-bar-track {
+    flex: 1;
+    height: 28px;
+    background: #F3F4F6;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .party-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 1.5s ease;
+    display: flex;
+    align-items: center;
+    padding-left: 0.75rem;
+  }
+  .party-bar-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  /* STATEMENT FEED */
+  .statements-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .statement-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    transition: transform 0.15s;
+    cursor: pointer;
+  }
+  .statement-card:hover {
+    transform: translateX(4px);
+  }
+  .statement-source {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .source-news { background: var(--primary); }
+  .source-twitter { background: #1DA1F2; }
+  .source-parliament { background: #7C3AED; }
+  .statement-content { flex: 1; }
+  .statement-meta {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .statement-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+  }
+  .statement-tags {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+  .tag {
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: #EEF2FF;
+    color: #4F46E5;
+  }
+  .coherence-mini {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .coherence-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--primary);
+    color: rgba(255,255,255,0.6);
+    padding: 3rem 2rem;
+    margin-top: 2rem;
+  }
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-logo {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #fff;
+  }
+  .footer-logo span { color: var(--secondary); }
+  .footer-text { font-size: 0.8rem; }
+
+  /* NAV TABS for page switching */
+  .mockup-tabs {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(27,54,93,0.95);
+    padding: 0.5rem;
+    border-radius: 12px;
+    z-index: 200;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .mockup-tab {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: rgba(255,255,255,0.7);
+    background: none;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .mockup-tab:hover { color: #fff; background: rgba(255,255,255,0.1); }
+  .mockup-tab.active { color: #fff; background: var(--secondary); }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ========== PAGE 2: LISTA POLITICI ========== */
+  .list-header {
+    background: var(--primary);
+    padding: 2rem 2rem 1.5rem;
+    color: #fff;
+  }
+  .list-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+  .list-header p { color: rgba(255,255,255,0.6); font-size: 0.9rem; }
+
+  .list-toolbar {
+    max-width: 1200px;
+    margin: -1.5rem auto 0;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 10;
+  }
+  .toolbar-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .toolbar-search {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+  .toolbar-search input {
+    width: 100%;
+    padding: 0.6rem 1rem 0.6rem 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    font-family: inherit;
+  }
+  .toolbar-search input:focus { border-color: var(--primary); }
+  .toolbar-search svg {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+  }
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+  .politicians-grid {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+  .politician-card {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .politician-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+  .politician-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #C8D6E5, #8395A7);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #fff;
+    font-size: 1rem;
+  }
+  .politician-info { flex: 1; }
+  .politician-name { font-weight: 600; font-size: 0.95rem; }
+  .politician-role { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem; }
+  .politician-score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .mini-bar {
+    flex: 1;
+    height: 6px;
+    background: #F3F4F6;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .mini-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+  }
+  .mini-score {
+    font-size: 0.8rem;
+    font-weight: 700;
+    min-width: 35px;
+    text-align: right;
+  }
+
+  /* ========== PAGE 3: PROFILO POLITICO ========== */
+  .profile-hero {
+    background: linear-gradient(135deg, var(--primary), #0F2240);
+    padding: 2rem 2rem 3rem;
+    color: #fff;
+  }
+  .profile-breadcrumb {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 1.5rem;
+  }
+  .profile-breadcrumb a { color: rgba(255,255,255,0.7); text-decoration: none; }
+  .profile-header {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+  .profile-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.3);
+    background: linear-gradient(135deg, #8395A7, #576574);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .profile-info h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+  .profile-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+  .profile-social {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .social-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .social-icon:hover { background: rgba(255,255,255,0.3); }
+
+  .profile-content {
+    max-width: 1200px;
+    margin: -1.5rem auto 0;
+    padding: 0 2rem 3rem;
+    position: relative;
+    z-index: 10;
+  }
+
+  .gauges-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .gauge-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .gauge-card-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .gauge-big {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .gauge-big .gauge-value {
+    font-size: 2rem;
+  }
+
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .card-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Closest party list */
+  .party-rank {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #F3F4F6;
+  }
+  .party-rank:last-child { border-bottom: none; }
+  .party-rank-num {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--muted);
+    width: 20px;
+  }
+  .party-rank-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  .party-rank-name {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .party-rank-score {
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  /* Radar placeholder */
+  .radar-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 280px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .radar-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+  }
+  .radar-axis {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1px;
+    background: #E5E7EB;
+    transform-origin: bottom center;
+  }
+  .radar-label {
+    position: absolute;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .radar-svg {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .timeline-month {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+    position: relative;
+  }
+  .timeline-month:first-child { margin-top: 0; }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #FAFAFA;
+    border-radius: 10px;
+    border-left: 3px solid var(--primary);
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2.4rem;
+    top: 1.2rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid var(--surface);
+  }
+  .timeline-item.warn { border-left-color: var(--warning); }
+  .timeline-item.warn::before { background: var(--warning); }
+  .timeline-item.vote { border-left-color: #7C3AED; }
+  .timeline-item.vote::before { background: #7C3AED; }
+  .timeline-item-meta {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .timeline-item-text {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+  .timeline-warning {
+    font-size: 0.75rem;
+    color: var(--warning);
+    font-weight: 500;
+    margin-top: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  /* History chart placeholder */
+  .chart-placeholder {
+    width: 100%;
+    height: 200px;
+    position: relative;
+    margin-top: 1rem;
+  }
+  .chart-svg { width: 100%; height: 100%; }
+  .chart-grid-line {
+    stroke: #E5E7EB;
+    stroke-width: 1;
+    stroke-dasharray: 4,4;
+  }
+  .chart-line {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .chart-area {
+    opacity: 0.1;
+  }
+  .chart-label {
+    font-size: 0.65rem;
+    fill: var(--muted);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .spotlight-grid { grid-template-columns: repeat(2, 1fr); }
+    .politicians-grid { grid-template-columns: 1fr; }
+    .gauges-row { grid-template-columns: 1fr; }
+    .profile-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 2rem; }
+    .hero-stats { gap: 1.5rem; }
+    .profile-header { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PAGE SWITCHER -->
+<div class="mockup-tabs">
+  <button class="mockup-tab active" onclick="switchPage('home')">Homepage</button>
+  <button class="mockup-tab" onclick="switchPage('list')">Lista Politici</button>
+  <button class="mockup-tab" onclick="switchPage('profile')">Profilo Politico</button>
+</div>
+
+<!-- ==================== PAGE 1: HOMEPAGE ==================== -->
+<div id="page-home" class="page active">
+
+<nav>
+  <div class="nav-logo">Politi<span>case</span></div>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Home</a></li>
+    <li><a href="#">Politici</a></li>
+    <li><a href="#">Partiti</a></li>
+    <li><a href="#">Confronta</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+  <div class="nav-search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input placeholder="Cerca politico...">
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>La politica italiana,<br>misurata con i <span>fatti</span>.</h1>
+  <p>Ogni dichiarazione. Ogni voto. Un indice di coerenza per ciascun parlamentare, calcolato con intelligenza artificiale.</p>
+  <div class="hero-search">
+    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input placeholder="Cerca un politico, un partito, un tema...">
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">632</div>
+      <div class="hero-stat-label">Parlamentari</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">147K</div>
+      <div class="hero-stat-label">Dichiarazioni</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">12.4K</div>
+      <div class="hero-stat-label">Votazioni</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">Live</div>
+      <div class="hero-stat-label">Aggiornamento</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div class="section-title">Coerenza Spotlight</div>
+    <a href="#" class="section-link">Vedi classifica completa &rarr;</a>
+  </div>
+  <div class="spotlight-grid">
+
+    <div class="spotlight-card">
+      <div class="spotlight-avatar" style="background:linear-gradient(135deg,#6366F1,#8B5CF6)">GM</div>
+      <div class="spotlight-name">Giorgia Meloni</div>
+      <span class="party-badge" style="background:var(--fdi)">FDI</span>
+      <div class="gauge-container">
+        <svg class="gauge-svg" width="90" height="90" viewBox="0 0 90 90">
+          <circle class="gauge-bg" cx="45" cy="45" r="38"/>
+          <circle class="gauge-fill" cx="45" cy="45" r="38" stroke="var(--success)" stroke-dasharray="238.76" stroke-dashoffset="64.47"/>
+        </svg>
+        <div class="gauge-text">
+          <div class="gauge-value" style="color:var(--success)">73%</div>
+        </div>
+      </div>
+      <div class="gauge-delta delta-up">+5% &uarr;</div>
+    </div>
+
+    <div class="spotlight-card">
+      <div class="spotlight-avatar" style="background:linear-gradient(135deg,#EC4899,#F43F5E)">ES</div>
+      <div class="spotlight-name">Elly Schlein</div>
+      <span class="party-badge" style="background:var(--pd)">PD</span>
+      <div class="gauge-container">
+        <svg class="gauge-svg" width="90" height="90" viewBox="0 0 90 90">
+          <circle class="gauge-bg" cx="45" cy="45" r="38"/>
+          <circle class="gauge-fill" cx="45" cy="45" r="38" stroke="var(--success)" stroke-dasharray="238.76" stroke-dashoffset="71.63"/>
+        </svg>
+        <div class="gauge-text">
+          <div class="gauge-value" style="color:var(--success)">70%</div>
+        </div>
+      </div>
+      <div class="gauge-delta delta-up">+3% &uarr;</div>
+    </div>
+
+    <div class="spotlight-card">
+      <div class="spotlight-avatar" style="background:linear-gradient(135deg,#F59E0B,#EF4444)">MS</div>
+      <div class="spotlight-name">Matteo Salvini</div>
+      <span class="party-badge" style="background:var(--lega)">Lega</span>
+      <div class="gauge-container">
+        <svg class="gauge-svg" width="90" height="90" viewBox="0 0 90 90">
+          <circle class="gauge-bg" cx="45" cy="45" r="38"/>
+          <circle class="gauge-fill" cx="45" cy="45" r="38" stroke="var(--warning)" stroke-dasharray="238.76" stroke-dashoffset="131.32"/>
+        </svg>
+        <div class="gauge-text">
+          <div class="gauge-value" style="color:var(--warning)">45%</div>
+        </div>
+      </div>
+      <div class="gauge-delta delta-down">-12% &darr;</div>
+    </div>
+
+    <div class="spotlight-card">
+      <div class="spotlight-avatar" style="background:linear-gradient(135deg,#10B981,#059669)">GC</div>
+      <div class="spotlight-name">Giuseppe Conte</div>
+      <span class="party-badge" style="background:#D4A017;color:#333">M5S</span>
+      <div class="gauge-container">
+        <svg class="gauge-svg" width="90" height="90" viewBox="0 0 90 90">
+          <circle class="gauge-bg" cx="45" cy="45" r="38"/>
+          <circle class="gauge-fill" cx="45" cy="45" r="38" stroke="var(--warning)" stroke-dasharray="238.76" stroke-dashoffset="114.6"/>
+        </svg>
+        <div class="gauge-text">
+          <div class="gauge-value" style="color:var(--warning)">52%</div>
+        </div>
+      </div>
+      <div class="gauge-delta delta-down">-4% &darr;</div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div class="section-title">Coerenza media per Partito</div>
+  </div>
+  <div class="party-bars">
+    <div class="party-bar-row">
+      <div class="party-bar-name">Fratelli d'Italia</div>
+      <div class="party-bar-track"><div class="party-bar-fill" style="width:72%;background:var(--fdi)"><span class="party-bar-value">72%</span></div></div>
+    </div>
+    <div class="party-bar-row">
+      <div class="party-bar-name">PD</div>
+      <div class="party-bar-track"><div class="party-bar-fill" style="width:68%;background:var(--pd)"><span class="party-bar-value">68%</span></div></div>
+    </div>
+    <div class="party-bar-row">
+      <div class="party-bar-name">Forza Italia</div>
+      <div class="party-bar-track"><div class="party-bar-fill" style="width:63%;background:var(--fi)"><span class="party-bar-value">63%</span></div></div>
+    </div>
+    <div class="party-bar-row">
+      <div class="party-bar-name">M5S</div>
+      <div class="party-bar-track"><div class="party-bar-fill" style="width:51%;background:#D4A017"><span class="party-bar-value">51%</span></div></div>
+    </div>
+    <div class="party-bar-row">
+      <div class="party-bar-name">Lega</div>
+      <div class="party-bar-track"><div class="party-bar-fill" style="width:43%;background:var(--lega)"><span class="party-bar-value">43%</span></div></div>
+    </div>
+    <div class="party-bar-row">
+      <div class="party-bar-name">Azione - IV</div>
+      <div class="party-bar-track"><div class="party-bar-fill" style="width:59%;background:var(--azione)"><span class="party-bar-value">59%</span></div></div>
+    </div>
+    <div class="party-bar-row">
+      <div class="party-bar-name">AVS</div>
+      <div class="party-bar-track"><div class="party-bar-fill" style="width:66%;background:var(--avs)"><span class="party-bar-value">66%</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div class="section-title">Ultime Dichiarazioni</div>
+    <a href="#" class="section-link">Vedi tutte &rarr;</a>
+  </div>
+  <div class="statements-feed">
+
+    <div class="statement-card">
+      <div class="statement-source source-news">ANSA</div>
+      <div class="statement-content">
+        <div class="statement-meta">2h fa &middot; Giorgia Meloni (FDI) &middot; Conferenza stampa</div>
+        <div class="statement-text">"Il piano economico del governo prosegue nella direzione tracciata. Confermiamo gli impegni presi con i cittadini italiani sulla riduzione fiscale."</div>
+        <div class="statement-tags">
+          <span class="tag">#economia</span>
+          <span class="tag">#fisco</span>
+          <span class="coherence-mini">
+            <span class="coherence-dot" style="background:var(--success)"></span>
+            <span style="color:var(--success)">89%</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="statement-card">
+      <div class="statement-source source-twitter">X</div>
+      <div class="statement-content">
+        <div class="statement-meta">4h fa &middot; Matteo Salvini (Lega) &middot; Twitter/X</div>
+        <div class="statement-text">"L'Europa deve cambiare rotta sull'immigrazione. Servono politiche serie, non chiacchiere. Noi lo abbiamo sempre detto."</div>
+        <div class="statement-tags">
+          <span class="tag">#immigrazione</span>
+          <span class="tag">#europa</span>
+          <span class="coherence-mini">
+            <span class="coherence-dot" style="background:var(--warning)"></span>
+            <span style="color:var(--warning)">56%</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="statement-card">
+      <div class="statement-source source-parliament">CAM</div>
+      <div class="statement-content">
+        <div class="statement-meta">6h fa &middot; Elly Schlein (PD) &middot; Camera dei Deputati</div>
+        <div class="statement-text">"Chiediamo al governo un piano straordinario per la sanità pubblica. I tagli degli ultimi anni hanno messo in ginocchio il sistema sanitario nazionale."</div>
+        <div class="statement-tags">
+          <span class="tag">#sanità</span>
+          <span class="tag">#spesa pubblica</span>
+          <span class="coherence-mini">
+            <span class="coherence-dot" style="background:var(--success)"></span>
+            <span style="color:var(--success)">92%</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">Politi<span>case</span></div>
+      <div class="footer-text" style="margin-top:0.5rem">La politica italiana, misurata con i fatti.</div>
+    </div>
+    <div class="footer-text">
+      Dati: dati.camera.it &middot; dati.senato.it &middot; Openpolis<br>
+      Analisi AI: Claude (Anthropic) &middot; Open Source
+    </div>
+  </div>
+</footer>
+
+</div>
+
+<!-- ==================== PAGE 2: LISTA POLITICI ==================== -->
+<div id="page-list" class="page">
+
+<nav>
+  <div class="nav-logo">Politi<span>case</span></div>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#" class="active">Politici</a></li>
+    <li><a href="#">Partiti</a></li>
+    <li><a href="#">Confronta</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+  <div class="nav-search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input placeholder="Cerca politico...">
+  </div>
+</nav>
+
+<div class="list-header">
+  <div style="max-width:1200px;margin:0 auto">
+    <h1>Parlamentari</h1>
+    <p>632 membri della XIX Legislatura &mdash; Camera dei Deputati e Senato della Repubblica</p>
+  </div>
+</div>
+
+<div class="list-toolbar">
+  <div class="toolbar-card">
+    <div class="toolbar-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input placeholder="Cerca per nome...">
+    </div>
+    <button class="filter-btn active">Tutti</button>
+    <button class="filter-btn">Camera</button>
+    <button class="filter-btn">Senato</button>
+    <button class="filter-btn" style="border-left:2px solid var(--border);padding-left:1.5rem">FDI</button>
+    <button class="filter-btn">PD</button>
+    <button class="filter-btn">M5S</button>
+    <button class="filter-btn">Lega</button>
+    <button class="filter-btn">FI</button>
+    <button class="filter-btn">Azione</button>
+    <button class="filter-btn">AVS</button>
+  </div>
+</div>
+
+<div class="politicians-grid">
+
+  <div class="politician-card">
+    <div class="politician-avatar" style="background:linear-gradient(135deg,#6366F1,#8B5CF6)">GM</div>
+    <div class="politician-info">
+      <div class="politician-name">Giorgia Meloni</div>
+      <div class="politician-role">Deputata &middot; FDI &middot; Lazio 1</div>
+      <div class="politician-score">
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:73%;background:var(--success)"></div></div>
+        <div class="mini-score" style="color:var(--success)">73%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="politician-card">
+    <div class="politician-avatar" style="background:linear-gradient(135deg,#EC4899,#F43F5E)">ES</div>
+    <div class="politician-info">
+      <div class="politician-name">Elly Schlein</div>
+      <div class="politician-role">Deputata &middot; PD &middot; Emilia-Romagna</div>
+      <div class="politician-score">
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:70%;background:var(--success)"></div></div>
+        <div class="mini-score" style="color:var(--success)">70%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="politician-card">
+    <div class="politician-avatar" style="background:linear-gradient(135deg,#F59E0B,#EF4444)">MS</div>
+    <div class="politician-info">
+      <div class="politician-name">Matteo Salvini</div>
+      <div class="politician-role">Senatore &middot; Lega &middot; Lombardia</div>
+      <div class="politician-score">
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:45%;background:var(--warning)"></div></div>
+        <div class="mini-score" style="color:var(--warning)">45%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="politician-card">
+    <div class="politician-avatar" style="background:linear-gradient(135deg,#10B981,#059669)">GC</div>
+    <div class="politician-info">
+      <div class="politician-name">Giuseppe Conte</div>
+      <div class="politician-role">Deputato &middot; M5S &middot; Campania 1</div>
+      <div class="politician-score">
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:52%;background:var(--warning)"></div></div>
+        <div class="mini-score" style="color:var(--warning)">52%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="politician-card">
+    <div class="politician-avatar" style="background:linear-gradient(135deg,#3B82F6,#2563EB)">AT</div>
+    <div class="politician-info">
+      <div class="politician-name">Antonio Tajani</div>
+      <div class="politician-role">Deputato &middot; FI &middot; Lazio 2</div>
+      <div class="politician-score">
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:67%;background:var(--success)"></div></div>
+        <div class="mini-score" style="color:var(--success)">67%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="politician-card">
+    <div class="politician-avatar" style="background:linear-gradient(135deg,#8B5CF6,#7C3AED)">CC</div>
+    <div class="politician-info">
+      <div class="politician-name">Carlo Calenda</div>
+      <div class="politician-role">Senatore &middot; Azione &middot; Lazio</div>
+      <div class="politician-score">
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:61%;background:var(--warning)"></div></div>
+        <div class="mini-score" style="color:var(--warning)">61%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="politician-card">
+    <div class="politician-avatar" style="background:linear-gradient(135deg,#14B8A6,#0D9488)">AF</div>
+    <div class="politician-info">
+      <div class="politician-name">Angelo Bonelli</div>
+      <div class="politician-role">Deputato &middot; AVS &middot; Piemonte 1</div>
+      <div class="politician-score">
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:74%;background:var(--success)"></div></div>
+        <div class="mini-score" style="color:var(--success)">74%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="politician-card">
+    <div class="politician-avatar" style="background:linear-gradient(135deg,#F97316,#EA580C)">MR</div>
+    <div class="politician-info">
+      <div class="politician-name">Matteo Renzi</div>
+      <div class="politician-role">Senatore &middot; IV &middot; Toscana</div>
+      <div class="politician-score">
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:38%;background:var(--danger)"></div></div>
+        <div class="mini-score" style="color:var(--danger)">38%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="politician-card">
+    <div class="politician-avatar" style="background:linear-gradient(135deg,#64748B,#475569)">LF</div>
+    <div class="politician-info">
+      <div class="politician-name">Lorenzo Fontana</div>
+      <div class="politician-role">Deputato &middot; Lega &middot; Veneto 1</div>
+      <div class="politician-score">
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:58%;background:var(--warning)"></div></div>
+        <div class="mini-score" style="color:var(--warning)">58%</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Politi<span>case</span></div>
+    <div class="footer-text">Dati: dati.camera.it &middot; dati.senato.it &middot; Openpolis</div>
+  </div>
+</footer>
+
+</div>
+
+<!-- ==================== PAGE 3: PROFILO POLITICO ==================== -->
+<div id="page-profile" class="page">
+
+<nav>
+  <div class="nav-logo">Politi<span>case</span></div>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#" class="active">Politici</a></li>
+    <li><a href="#">Partiti</a></li>
+    <li><a href="#">Confronta</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+  <div class="nav-search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input placeholder="Cerca politico...">
+  </div>
+</nav>
+
+<div class="profile-hero">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="profile-breadcrumb"><a href="#">Home</a> / <a href="#">Politici</a> / Giorgia Meloni</div>
+    <div class="profile-header">
+      <div class="profile-photo">GM</div>
+      <div class="profile-info">
+        <h1>Giorgia Meloni</h1>
+        <div class="profile-subtitle">
+          <span>Deputata</span>
+          <span style="opacity:0.4">|</span>
+          <span class="party-badge" style="background:var(--fdi);font-size:0.75rem">Fratelli d'Italia</span>
+          <span style="opacity:0.4">|</span>
+          <span>Lazio 1 &middot; XIX Legislatura</span>
+        </div>
+        <div class="profile-social">
+          <div class="social-icon">X</div>
+          <div class="social-icon">FB</div>
+          <div class="social-icon">IG</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="profile-content">
+
+  <!-- 3 Gauge Cards -->
+  <div class="gauges-row">
+    <div class="gauge-card">
+      <div class="gauge-card-title">Coerenza col Partito</div>
+      <div class="gauge-big">
+        <svg class="gauge-svg" width="120" height="120" viewBox="0 0 120 120">
+          <circle class="gauge-bg" cx="60" cy="60" r="52" stroke-width="8"/>
+          <circle class="gauge-fill" cx="60" cy="60" r="52" stroke="var(--success)" stroke-width="8" stroke-dasharray="326.73" stroke-dashoffset="88.22" stroke-linecap="round"/>
+        </svg>
+        <div class="gauge-text">
+          <div class="gauge-value" style="color:var(--success)">73%</div>
+          <div class="gauge-label">su programma FDI</div>
+        </div>
+      </div>
+      <div class="gauge-delta delta-up" style="margin-top:0.5rem">+5% vs 6 mesi fa</div>
+    </div>
+
+    <div class="gauge-card">
+      <div class="gauge-card-title">Coerenza Personale</div>
+      <div class="gauge-big">
+        <svg class="gauge-svg" width="120" height="120" viewBox="0 0 120 120">
+          <circle class="gauge-bg" cx="60" cy="60" r="52" stroke-width="8"/>
+          <circle class="gauge-fill" cx="60" cy="60" r="52" stroke="var(--success)" stroke-width="8" stroke-dasharray="326.73" stroke-dashoffset="62.08" stroke-linecap="round"/>
+        </svg>
+        <div class="gauge-text">
+          <div class="gauge-value" style="color:var(--success)">81%</div>
+          <div class="gauge-label">auto-coerenza</div>
+        </div>
+      </div>
+      <div class="gauge-delta delta-down" style="margin-top:0.5rem">-2% vs 6 mesi fa</div>
+    </div>
+
+    <div class="gauge-card">
+      <div class="gauge-card-title">Coerenza Voti</div>
+      <div class="gauge-big">
+        <svg class="gauge-svg" width="120" height="120" viewBox="0 0 120 120">
+          <circle class="gauge-bg" cx="60" cy="60" r="52" stroke-width="8"/>
+          <circle class="gauge-fill" cx="60" cy="60" r="52" stroke="var(--warning)" stroke-width="8" stroke-dasharray="326.73" stroke-dashoffset="114.35" stroke-linecap="round"/>
+        </svg>
+        <div class="gauge-text">
+          <div class="gauge-value" style="color:var(--warning)">65%</div>
+          <div class="gauge-label">voti vs dichiarazioni</div>
+        </div>
+      </div>
+      <div class="gauge-delta" style="margin-top:0.5rem;color:var(--muted)">stabile</div>
+    </div>
+  </div>
+
+  <!-- Two-column: Closest Party + Radar -->
+  <div class="profile-grid">
+    <div class="card">
+      <div class="card-title">Partito più vicino</div>
+      <div class="party-rank">
+        <div class="party-rank-num">1.</div>
+        <div class="party-rank-dot" style="background:var(--fdi)"></div>
+        <div class="party-rank-name">Fratelli d'Italia</div>
+        <div class="party-rank-score" style="color:var(--success)">73%</div>
+      </div>
+      <div class="party-rank">
+        <div class="party-rank-num">2.</div>
+        <div class="party-rank-dot" style="background:var(--lega)"></div>
+        <div class="party-rank-name">Lega</div>
+        <div class="party-rank-score" style="color:var(--success)">68%</div>
+      </div>
+      <div class="party-rank">
+        <div class="party-rank-num">3.</div>
+        <div class="party-rank-dot" style="background:var(--fi)"></div>
+        <div class="party-rank-name">Forza Italia</div>
+        <div class="party-rank-score" style="color:var(--warning)">54%</div>
+      </div>
+      <div class="party-rank">
+        <div class="party-rank-num">4.</div>
+        <div class="party-rank-dot" style="background:var(--azione)"></div>
+        <div class="party-rank-name">Azione</div>
+        <div class="party-rank-score" style="color:var(--warning)">41%</div>
+      </div>
+      <div class="party-rank">
+        <div class="party-rank-num">5.</div>
+        <div class="party-rank-dot" style="background:var(--pd)"></div>
+        <div class="party-rank-name">PD</div>
+        <div class="party-rank-score" style="color:var(--danger)">22%</div>
+      </div>
+      <div class="party-rank">
+        <div class="party-rank-num">6.</div>
+        <div class="party-rank-dot" style="background:#D4A017"></div>
+        <div class="party-rank-name">M5S</div>
+        <div class="party-rank-score" style="color:var(--danger)">18%</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Allineamento per tema</div>
+      <div class="radar-placeholder">
+        <svg class="radar-svg" viewBox="0 0 280 280">
+          <!-- Grid circles -->
+          <circle cx="140" cy="140" r="120" fill="none" stroke="#E5E7EB" stroke-width="1"/>
+          <circle cx="140" cy="140" r="90" fill="none" stroke="#E5E7EB" stroke-width="1"/>
+          <circle cx="140" cy="140" r="60" fill="none" stroke="#E5E7EB" stroke-width="1"/>
+          <circle cx="140" cy="140" r="30" fill="none" stroke="#E5E7EB" stroke-width="1"/>
+          <!-- Axes -->
+          <line x1="140" y1="20" x2="140" y2="260" stroke="#E5E7EB" stroke-width="1"/>
+          <line x1="36" y1="80" x2="244" y2="200" stroke="#E5E7EB" stroke-width="1"/>
+          <line x1="36" y1="200" x2="244" y2="80" stroke="#E5E7EB" stroke-width="1"/>
+          <!-- Party program polygon (FDI) -->
+          <polygon points="140,32 230,90 230,190 140,248 50,190 50,90" fill="var(--fdi)" fill-opacity="0.15" stroke="var(--fdi)" stroke-width="1.5" stroke-dasharray="4,4"/>
+          <!-- Politician polygon -->
+          <polygon points="140,44 220,95 200,200 140,230 70,180 60,95" fill="var(--primary)" fill-opacity="0.2" stroke="var(--primary)" stroke-width="2"/>
+          <!-- Dots on politician polygon -->
+          <circle cx="140" cy="44" r="4" fill="var(--primary)"/>
+          <circle cx="220" cy="95" r="4" fill="var(--primary)"/>
+          <circle cx="200" cy="200" r="4" fill="var(--primary)"/>
+          <circle cx="140" cy="230" r="4" fill="var(--primary)"/>
+          <circle cx="70" cy="180" r="4" fill="var(--primary)"/>
+          <circle cx="60" cy="95" r="4" fill="var(--primary)"/>
+          <!-- Labels -->
+          <text x="140" y="14" text-anchor="middle" font-size="10" font-weight="600" fill="#6B7280">Economia</text>
+          <text x="256" y="88" text-anchor="start" font-size="10" font-weight="600" fill="#6B7280">Sicurezza</text>
+          <text x="256" y="204" text-anchor="start" font-size="10" font-weight="600" fill="#6B7280">Europa</text>
+          <text x="140" y="275" text-anchor="middle" font-size="10" font-weight="600" fill="#6B7280">Ambiente</text>
+          <text x="20" y="204" text-anchor="end" font-size="10" font-weight="600" fill="#6B7280">Sanità</text>
+          <text x="20" y="88" text-anchor="end" font-size="10" font-weight="600" fill="#6B7280">Lavoro</text>
+        </svg>
+      </div>
+      <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:0.5rem">
+        <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem">
+          <div style="width:12px;height:3px;background:var(--primary);border-radius:2px"></div>
+          <span style="color:var(--muted)">Meloni</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem">
+          <div style="width:12px;height:3px;background:var(--fdi);border-radius:2px;opacity:0.5"></div>
+          <span style="color:var(--muted)">Programma FDI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-title">Dichiarazioni e Voti</div>
+    <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem">
+      <button class="filter-btn active" style="font-size:0.75rem;padding:0.35rem 0.75rem">Tutte</button>
+      <button class="filter-btn" style="font-size:0.75rem;padding:0.35rem 0.75rem">News</button>
+      <button class="filter-btn" style="font-size:0.75rem;padding:0.35rem 0.75rem">Social</button>
+      <button class="filter-btn" style="font-size:0.75rem;padding:0.35rem 0.75rem">Parlamento</button>
+      <button class="filter-btn" style="font-size:0.75rem;padding:0.35rem 0.75rem">Voti</button>
+    </div>
+    <div class="timeline">
+      <div class="timeline-month">Marzo 2026</div>
+
+      <div class="timeline-item">
+        <div class="timeline-item-meta">
+          <span style="font-weight:600">ANSA</span> &middot; 18 mar 2026 &middot;
+          <span class="tag">#economia</span>
+          <span class="coherence-mini" style="margin-left:auto">
+            <span class="coherence-dot" style="background:var(--success)"></span>
+            <span style="color:var(--success)">89%</span>
+          </span>
+        </div>
+        <div class="timeline-item-text">"Il piano economico del governo prosegue nella direzione tracciata. Confermiamo gli impegni presi con i cittadini sulla riduzione fiscale."</div>
+      </div>
+
+      <div class="timeline-item warn">
+        <div class="timeline-item-meta">
+          <span style="font-weight:600">Twitter/X</span> &middot; 15 mar 2026 &middot;
+          <span class="tag">#sanità</span>
+          <span class="coherence-mini" style="margin-left:auto">
+            <span class="coherence-dot" style="background:var(--warning)"></span>
+            <span style="color:var(--warning)">45%</span>
+          </span>
+        </div>
+        <div class="timeline-item-text">"La sanità italiana ha bisogno di più risorse. Stiamo lavorando per aumentare i fondi al SSN."</div>
+        <div class="timeline-warning">&#9888; Contraddice dichiarazione del 12 gen 2026 sui tagli alla spesa sanitaria</div>
+      </div>
+
+      <div class="timeline-item vote">
+        <div class="timeline-item-meta">
+          <span style="font-weight:600">Camera dei Deputati</span> &middot; 10 mar 2026 &middot;
+          <span class="tag">#bilancio</span>
+          <span class="coherence-mini" style="margin-left:auto">
+            <span class="coherence-dot" style="background:var(--success)"></span>
+            <span style="color:var(--success)">72%</span>
+          </span>
+        </div>
+        <div class="timeline-item-text">Voto <strong style="color:var(--success)">FAVOREVOLE</strong> su DDL Bilancio 2026 &mdash; Emendamento riduzione IRPEF</div>
+      </div>
+
+      <div class="timeline-month">Febbraio 2026</div>
+
+      <div class="timeline-item">
+        <div class="timeline-item-meta">
+          <span style="font-weight:600">Repubblica</span> &middot; 22 feb 2026 &middot;
+          <span class="tag">#immigrazione</span>
+          <span class="coherence-mini" style="margin-left:auto">
+            <span class="coherence-dot" style="background:var(--success)"></span>
+            <span style="color:var(--success)">91%</span>
+          </span>
+        </div>
+        <div class="timeline-item-text">"Gli accordi con i paesi nordafricani stanno dando risultati concreti. La linea del governo è chiara e non cambia."</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-item-meta">
+          <span style="font-weight:600">Conferenza stampa</span> &middot; 14 feb 2026 &middot;
+          <span class="tag">#europa</span>
+          <span class="coherence-mini" style="margin-left:auto">
+            <span class="coherence-dot" style="background:var(--warning)"></span>
+            <span style="color:var(--warning)">58%</span>
+          </span>
+        </div>
+        <div class="timeline-item-text">"L'Italia deve avere un ruolo di primo piano nelle istituzioni europee. Collaborazione sì, ma difendendo sempre l'interesse nazionale."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Chart -->
+  <div class="card">
+    <div class="card-title">Storico Coerenza</div>
+    <div class="chart-placeholder">
+      <svg class="chart-svg" viewBox="0 0 600 200">
+        <!-- Grid -->
+        <line x1="50" y1="20" x2="580" y2="20" class="chart-grid-line"/>
+        <line x1="50" y1="60" x2="580" y2="60" class="chart-grid-line"/>
+        <line x1="50" y1="100" x2="580" y2="100" class="chart-grid-line"/>
+        <line x1="50" y1="140" x2="580" y2="140" class="chart-grid-line"/>
+        <line x1="50" y1="180" x2="580" y2="180" stroke="#E5E7EB" stroke-width="1"/>
+        <!-- Y labels -->
+        <text x="40" y="24" class="chart-label" text-anchor="end">100%</text>
+        <text x="40" y="64" class="chart-label" text-anchor="end">75%</text>
+        <text x="40" y="104" class="chart-label" text-anchor="end">50%</text>
+        <text x="40" y="144" class="chart-label" text-anchor="end">25%</text>
+        <text x="40" y="184" class="chart-label" text-anchor="end">0%</text>
+        <!-- X labels -->
+        <text x="95" y="198" class="chart-label" text-anchor="middle">Ott</text>
+        <text x="185" y="198" class="chart-label" text-anchor="middle">Nov</text>
+        <text x="275" y="198" class="chart-label" text-anchor="middle">Dic</text>
+        <text x="365" y="198" class="chart-label" text-anchor="middle">Gen</text>
+        <text x="455" y="198" class="chart-label" text-anchor="middle">Feb</text>
+        <text x="545" y="198" class="chart-label" text-anchor="middle">Mar</text>
+        <!-- Party Alignment line (green) -->
+        <path d="M95,72 L185,68 L275,76 L365,64 L455,60 L545,56" class="chart-line" stroke="var(--success)"/>
+        <path d="M95,72 L185,68 L275,76 L365,64 L455,60 L545,56 L545,180 L95,180 Z" class="chart-area" fill="var(--success)"/>
+        <!-- Self-consistency line (blue) -->
+        <path d="M95,48 L185,44 L275,52 L365,40 L455,44 L545,48" class="chart-line" stroke="var(--primary)"/>
+        <!-- Vote consistency line (orange) -->
+        <path d="M95,88 L185,96 L275,84 L365,80 L455,76 L545,76" class="chart-line" stroke="var(--warning)"/>
+        <!-- Dots -->
+        <circle cx="545" cy="56" r="4" fill="var(--success)"/>
+        <circle cx="545" cy="48" r="4" fill="var(--primary)"/>
+        <circle cx="545" cy="76" r="4" fill="var(--warning)"/>
+      </svg>
+    </div>
+    <div style="display:flex;gap:1.5rem;justify-content:center;margin-top:0.75rem">
+      <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem">
+        <div style="width:16px;height:3px;background:var(--success);border-radius:2px"></div>
+        <span style="color:var(--muted)">Coerenza Partito</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem">
+        <div style="width:16px;height:3px;background:var(--primary);border-radius:2px"></div>
+        <span style="color:var(--muted)">Coerenza Personale</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem">
+        <div style="width:16px;height:3px;background:var(--warning);border-radius:2px"></div>
+        <span style="color:var(--muted)">Coerenza Voti</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Politi<span>case</span></div>
+    <div class="footer-text">Dati: dati.camera.it &middot; dati.senato.it &middot; Openpolis</div>
+  </div>
+</footer>
+
+</div>
+
+<script>
+function switchPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.mockup-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+
+</body>
+</html>
