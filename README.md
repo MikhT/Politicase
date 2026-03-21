@@ -67,8 +67,91 @@ Avere in un unico posto tutta la politica italiana a confronto. Per ogni politic
 | **dati.senato.it** | SPARQL | ~200 senatori, mandati, attività |
 | **Openpolis API** (api3.openpolis.it) | REST (Popolo standard) | Anagrafica arricchita, link social, 10k req/giorno |
 | **News italiane** | RSS + Scraping | ANSA, Repubblica, Corriere, Il Fatto Quotidiano, Il Sole 24 Ore |
-| **Social Media** | API + Scraping | Twitter/X, Facebook, Instagram dei parlamentari |
+| **Twitter/X** | Nitter (self-hosted) + Apify (fallback) | Tweet e dichiarazioni dei parlamentari — vedi sezione dedicata |
+| **Social Media (altro)** | API + Scraping | Facebook, Instagram dei parlamentari |
 | **Atti parlamentari** | Scraping | Trascrizioni ufficiali camera.it e senato.it |
+
+---
+
+## Scraper Twitter/X — Strumenti Terzi
+
+Lo scraping diretto di X/Twitter è impraticabile (rate limiting aggressivo, autenticazione obbligatoria, rendering JS). Usiamo un approccio a due livelli con failover automatico:
+
+### Strategia
+
+```
+@GiorgiaMeloni → [Nitter self-hosted] → Tweet ✓
+                         ↓ (se fallisce)
+                  [Apify cloud API]   → Tweet ✓
+```
+
+### 1. Nitter (fonte primaria — gratuito)
+
+[Nitter](https://github.com/zedeus/nitter) è un frontend alternativo per Twitter che renderizza i profili come HTML statico. Lo hostiamo in locale via Docker:
+
+```bash
+# In docker-compose.yml
+docker run -p 8080:8080 zedeus/nitter
+```
+
+- **Pro**: Gratuito, nessuna API key, parsing HTML semplice con Cheerio
+- **Contro**: Può rompersi se Twitter cambia layout, richiede manutenzione
+- **Rate**: ~1 richiesta ogni 1.5s (configurabile)
+
+### 2. Apify (fallback — pay-per-use)
+
+[Apify](https://apify.com) è una piattaforma cloud per web scraping con actor preconfigurati per Twitter.
+
+- **Pro**: Affidabile, gestito, niente infrastruttura da mantenere
+- **Contro**: A pagamento (~$0.25-0.50 per run di 50 tweet)
+- **Budget stimato**: ~$10-30/mese (solo come fallback)
+
+### Variabili d'ambiente
+
+```env
+# Nitter
+NITTER_INSTANCE_URL=http://localhost:8080
+NITTER_TIMEOUT_MS=10000
+NITTER_DELAY_MS=1500
+NITTER_MAX_RETRIES=2
+
+# Apify
+APIFY_API_TOKEN=apify_api_xxx
+APIFY_TWITTER_ACTOR_ID=apidojo~tweet-scraper
+APIFY_TIMEOUT_MS=60000
+APIFY_MAX_COST_USD=0.5
+
+# Filtri
+TWITTER_MAX_TWEETS=50
+TWITTER_LANGUAGES=it
+```
+
+### Utilizzo
+
+```typescript
+import { TwitterScraper } from "@/scrapers/twitter";
+
+const scraper = new TwitterScraper();
+
+// Singolo politico
+const result = await scraper.scrape("GiorgiaMeloni");
+console.log(result.tweets); // Tweet italiani, no retweet, solo dichiarazioni originali
+
+// Multipli politici (con delay tra le richieste)
+const handles = ["GiorgiaMeloni", "EnricoLetta", "GiuseppeConteIT"];
+const results = await scraper.scrapeMultiple(handles);
+
+// Health check
+const health = await scraper.checkHealth();
+// { nitter: true, apify: true }
+```
+
+### Pipeline di filtro
+
+1. Skip retweet (vogliamo solo dichiarazioni originali)
+2. Filtro lingua (solo italiano, configurabile)
+3. Skip tweet vuoti
+4. Deduplicazione (a valle, nello stadio NORMALIZE)
 
 ---
 
