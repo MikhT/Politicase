@@ -80,22 +80,23 @@ Lo scraping diretto di X/Twitter è impraticabile (rate limiting aggressivo, aut
 ### Strategia
 
 ```
-@GiorgiaMeloni → [Nitter self-hosted] → Tweet ✓
-                         ↓ (se fallisce)
-                  [Apify cloud API]   → Tweet ✓
+@GiorgiaMeloni → [Nitter pubblico RSS] → Tweet ✓
+                         ↓ (se tutte le istanze falliscono)
+                  [Apify cloud API]     → Tweet ✓
 ```
 
-### 1. Nitter (fonte primaria — gratuito)
+### 1. Nitter RSS (fonte primaria — gratuito, zero setup)
 
-[Nitter](https://github.com/zedeus/nitter) è un frontend alternativo per Twitter che renderizza i profili come HTML statico. Lo hostiamo in locale via Docker:
+[Nitter](https://github.com/zedeus/nitter) è un frontend alternativo per Twitter. Le istanze pubbliche espongono feed RSS a `/{handle}/rss` — XML standard, parsabile con un semplice `fetch`, senza Cheerio o Playwright.
 
-```bash
-# In docker-compose.yml
-docker run -p 8080:8080 zedeus/nitter
+Più istanze pubbliche sono configurate come fallback una dell'altra:
+
+```
+nitter.privacydev.net → nitter.poast.org → nitter.woodland.cafe → nitter.1d4.us
 ```
 
-- **Pro**: Gratuito, nessuna API key, parsing HTML semplice con Cheerio
-- **Contro**: Può rompersi se Twitter cambia layout, richiede manutenzione
+- **Pro**: Gratuito, zero infrastruttura, RSS = parsing banale, niente API key
+- **Contro**: Le istanze pubbliche possono andare giù (mitigato dal multi-instance)
 - **Rate**: ~1 richiesta ogni 1.5s (configurabile)
 
 ### 2. Apify (fallback — pay-per-use)
@@ -109,13 +110,13 @@ docker run -p 8080:8080 zedeus/nitter
 ### Variabili d'ambiente
 
 ```env
-# Nitter
-NITTER_INSTANCE_URL=http://localhost:8080
+# Nitter (lista di istanze pubbliche, separate da virgola)
+NITTER_INSTANCE_URLS=https://nitter.privacydev.net,https://nitter.poast.org
 NITTER_TIMEOUT_MS=10000
 NITTER_DELAY_MS=1500
-NITTER_MAX_RETRIES=2
+NITTER_MAX_RETRIES=3
 
-# Apify
+# Apify (fallback)
 APIFY_API_TOKEN=apify_api_xxx
 APIFY_TWITTER_ACTOR_ID=apidojo~tweet-scraper
 APIFY_TIMEOUT_MS=60000
@@ -141,9 +142,9 @@ console.log(result.tweets); // Tweet italiani, no retweet, solo dichiarazioni or
 const handles = ["GiorgiaMeloni", "EnricoLetta", "GiuseppeConteIT"];
 const results = await scraper.scrapeMultiple(handles);
 
-// Health check
+// Health check — restituisce la prima istanza Nitter funzionante
 const health = await scraper.checkHealth();
-// { nitter: true, apify: true }
+// { nitter: "https://nitter.privacydev.net", apify: true }
 ```
 
 ### Pipeline di filtro

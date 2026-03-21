@@ -14,8 +14,8 @@ export type { Tweet, ScraperResult, ScraperError, TwitterScraperConfig };
  * TwitterScraper — unified scraper with automatic failover.
  *
  * Strategy:
- *   1. Try Nitter (free, self-hosted) with retries
- *   2. If Nitter fails, fall back to Apify (paid, cloud)
+ *   1. Try Nitter public instances RSS (free, no setup)
+ *   2. If all instances fail, fall back to Apify (paid, cloud)
  *   3. Filter tweets by language (default: Italian only)
  *   4. Skip retweets (we want original declarations)
  *
@@ -36,21 +36,18 @@ export class TwitterScraper {
 
   /**
    * Scrape tweets for a politician's Twitter handle.
-   * Tries Nitter first, falls back to Apify on failure.
-   *
-   * @param handle - Twitter handle (with or without '@')
-   * @returns Filtered tweets (Italian, no retweets)
+   * Tries Nitter RSS first, falls back to Apify on failure.
    */
   async scrape(handle: string): Promise<ScraperResult> {
     const errors: ScraperError[] = [];
 
-    // --- Attempt 1: Nitter ---
+    // --- Attempt 1: Nitter RSS (free) ---
     const nitterResult = await this.tryNitter(handle, errors);
     if (nitterResult) {
       return this.filterTweets(nitterResult);
     }
 
-    // --- Attempt 2: Apify fallback ---
+    // --- Attempt 2: Apify fallback (paid) ---
     const apifyResult = await this.tryApify(handle, errors);
     if (apifyResult) {
       return this.filterTweets(apifyResult);
@@ -67,22 +64,20 @@ export class TwitterScraper {
       handle: handle.replace(/^@/, ""),
       scrapedAt: new Date(),
       source: "nitter",
-      hasMore: false,
-      cursor: null,
     };
   }
 
   /**
    * Scrape multiple handles in sequence with polite delays.
    */
-  async scrapeMultiple(handles: string[]): Promise<Map<string, ScraperResult>> {
+  async scrapeMultiple(
+    handles: string[],
+  ): Promise<Map<string, ScraperResult>> {
     const results = new Map<string, ScraperResult>();
 
     for (const handle of handles) {
       const result = await this.scrape(handle);
       results.set(handle.replace(/^@/, ""), result);
-
-      // Polite delay between politicians
       await this.nitter.delay();
     }
 
@@ -92,16 +87,13 @@ export class TwitterScraper {
   /**
    * Check which data sources are currently available.
    */
-  async checkHealth(): Promise<{
-    nitter: boolean;
-    apify: boolean;
-  }> {
-    const [nitterOk, apifyOk] = await Promise.all([
-      this.nitter.isHealthy(),
+  async checkHealth(): Promise<{ nitter: string | null; apify: boolean }> {
+    const [nitterInstance, apifyOk] = await Promise.all([
+      this.nitter.findHealthyInstance(),
       Promise.resolve(this.apify.isConfigured()),
     ]);
 
-    return { nitter: nitterOk, apify: apifyOk };
+    return { nitter: nitterInstance, apify: apifyOk };
   }
 
   // --- Private helpers ---
@@ -110,15 +102,15 @@ export class TwitterScraper {
     handle: string,
     errors: ScraperError[],
   ): Promise<ScraperResult | null> {
-    for (let attempt = 0; attempt <= this.config.nitterMaxRetries; attempt++) {
+    for (
+      let attempt = 0;
+      attempt <= this.config.nitterMaxRetries;
+      attempt++
+    ) {
       try {
         if (attempt > 0) {
-          console.log(
-            `[TwitterScraper] Nitter retry ${attempt}/${this.config.nitterMaxRetries} for @${handle}`,
-          );
           await sleep(this.config.nitterRetryDelayMs * attempt);
         }
-
         return await this.nitter.fetchTweets(
           handle,
           this.config.maxTweetsPerRun,
@@ -126,10 +118,6 @@ export class TwitterScraper {
       } catch (err) {
         const scraperErr = err as ScraperError;
         errors.push(scraperErr);
-        console.warn(
-          `[TwitterScraper] Nitter attempt ${attempt + 1} failed for @${handle}: ${scraperErr.message}`,
-        );
-
         if (!scraperErr.retryable) break;
       }
     }
@@ -150,11 +138,7 @@ export class TwitterScraper {
         this.config.maxTweetsPerRun,
       );
     } catch (err) {
-      const scraperErr = err as ScraperError;
-      errors.push(scraperErr);
-      console.warn(
-        `[TwitterScraper] Apify failed for @${handle}: ${scraperErr.message}`,
-      );
+      errors.push(err as ScraperError);
       return null;
     }
   }
@@ -164,20 +148,14 @@ export class TwitterScraper {
    */
   private filterTweets(result: ScraperResult): ScraperResult {
     const filtered = result.tweets.filter((tweet) => {
-      // Skip retweets — we want original declarations
       if (tweet.isRetweet) return false;
-
-      // Language filter (null = unknown, keep it for later detection)
       if (
         tweet.language !== null &&
         !this.config.allowedLanguages.includes(tweet.language)
       ) {
         return false;
       }
-
-      // Skip empty tweets
       if (!tweet.text.trim()) return false;
-
       return true;
     });
 

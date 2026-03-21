@@ -1,210 +1,229 @@
-import * as cheerio from "cheerio";
 import type {
   NitterConfig,
   Tweet,
-  TweetMedia,
-  TweetMetrics,
   ScraperResult,
   ScraperError,
 } from "./types";
 
 /**
- * Nitter client — scrapes tweets from a self-hosted Nitter instance.
+ * Nitter RSS client — fetches tweets via public Nitter instance RSS feeds.
  *
- * Nitter renders Twitter profiles as plain HTML, so we can parse them
- * with Cheerio without needing Playwright or any JS rendering.
+ * Nitter exposes RSS feeds at /{handle}/rss which return standard XML.
+ * No HTML parsing needed, no Cheerio, no Playwright — just fetch + XML parse.
  *
- * Setup: deploy Nitter via Docker (see docker-compose.yml)
- *   docker run -p 8080:8080 zedeus/nitter
+ * Multiple public instances are tried in order for resilience.
+ * If one goes down, the next is tried automatically.
  */
 export class NitterClient {
-  private baseUrl: string;
+  private instanceUrls: string[];
   private timeoutMs: number;
   private delayMs: number;
 
   constructor(config: NitterConfig) {
-    this.baseUrl = config.instanceUrl.replace(/\/$/, "");
+    this.instanceUrls = config.instanceUrls.map((u) => u.replace(/\/$/, ""));
     this.timeoutMs = config.timeoutMs;
     this.delayMs = config.delayBetweenRequestsMs;
   }
 
   /**
-   * Check if the Nitter instance is healthy and reachable.
+   * Find the first healthy Nitter instance from the list.
+   * Returns the base URL or null if none are reachable.
    */
-  async isHealthy(): Promise<boolean> {
-    try {
-      const response = await fetch(this.baseUrl, {
-        signal: AbortSignal.timeout(5_000),
-      });
-      return response.ok;
-    } catch {
-      return false;
+  async findHealthyInstance(): Promise<string | null> {
+    for (const url of this.instanceUrls) {
+      try {
+        const response = await fetch(url, {
+          signal: AbortSignal.timeout(5_000),
+        });
+        if (response.ok) return url;
+      } catch {
+        // Try next instance
+      }
     }
+    return null;
   }
 
   /**
-   * Fetch recent tweets for a given Twitter handle.
+   * Fetch recent tweets for a handle via Nitter RSS.
+   * Tries each configured instance in order until one works.
    *
    * @param handle - Twitter handle without '@' (e.g. "GiorgiaMeloni")
-   * @param maxTweets - Maximum number of tweets to collect
-   * @param cursor - Pagination cursor from a previous ScraperResult
+   * @param maxTweets - Maximum number of tweets to return
    */
   async fetchTweets(
     handle: string,
     maxTweets: number = 50,
-    cursor?: string,
   ): Promise<ScraperResult> {
     const cleanHandle = handle.replace(/^@/, "");
-    const url = cursor
-      ? `${this.baseUrl}/${cleanHandle}?cursor=${encodeURIComponent(cursor)}`
-      : `${this.baseUrl}/${cleanHandle}`;
+    let lastError: ScraperError | null = null;
 
-    const response = await fetch(url, {
+    for (const baseUrl of this.instanceUrls) {
+      try {
+        return await this.fetchFromInstance(baseUrl, cleanHandle, maxTweets);
+      } catch (err) {
+        lastError = err as ScraperError;
+        // Try next instance
+      }
+    }
+
+    // All instances failed
+    throw lastError ?? {
+      source: "nitter" as const,
+      handle: cleanHandle,
+      message: "All Nitter instances failed",
+      retryable: true,
+    };
+  }
+
+  /**
+   * Fetch RSS feed from a specific Nitter instance.
+   */
+  private async fetchFromInstance(
+    baseUrl: string,
+    handle: string,
+    maxTweets: number,
+  ): Promise<ScraperResult> {
+    const rssUrl = `${baseUrl}/${handle}/rss`;
+
+    const response = await fetch(rssUrl, {
       signal: AbortSignal.timeout(this.timeoutMs),
       headers: {
         "User-Agent": "Politicase/1.0 (parliamentary transparency project)",
-        Accept: "text/html",
+        Accept: "application/rss+xml, application/xml, text/xml",
       },
     });
 
     if (!response.ok) {
       const error: ScraperError = {
         source: "nitter",
-        handle: cleanHandle,
-        message: `Nitter returned HTTP ${response.status}`,
+        handle,
+        message: `${baseUrl} returned HTTP ${response.status}`,
         statusCode: response.status,
         retryable: response.status >= 500 || response.status === 429,
       };
       throw error;
     }
 
-    const html = await response.text();
-    const tweets = this.parseTimeline(html, cleanHandle);
-
-    // Respect maxTweets limit
-    const limited = tweets.slice(0, maxTweets);
-
-    // Extract pagination cursor for next page
-    const nextCursor = this.extractCursor(html);
+    const xml = await response.text();
+    const tweets = this.parseRssFeed(xml, handle);
 
     return {
-      tweets: limited,
-      handle: cleanHandle,
+      tweets: tweets.slice(0, maxTweets),
+      handle,
       scrapedAt: new Date(),
       source: "nitter",
-      hasMore: nextCursor !== null && tweets.length >= 20,
-      cursor: nextCursor,
     };
   }
 
   /**
-   * Parse the Nitter HTML timeline into structured Tweet objects.
+   * Parse Nitter RSS XML into Tweet objects.
+   *
+   * RSS structure:
+   * <channel>
+   *   <item>
+   *     <title>Tweet text...</title>
+   *     <dc:creator>@handle</dc:creator>
+   *     <description><![CDATA[HTML content]]></description>
+   *     <pubDate>Mon, 01 Jan 2024 12:00:00 GMT</pubDate>
+   *     <link>https://nitter.instance/handle/status/123456</link>
+   *     <guid>https://nitter.instance/handle/status/123456</guid>
+   *   </item>
+   * </channel>
    */
-  private parseTimeline(html: string, handle: string): Tweet[] {
-    const $ = cheerio.load(html);
+  private parseRssFeed(xml: string, handle: string): Tweet[] {
     const tweets: Tweet[] = [];
+    const items = xml.split("<item>").slice(1); // Skip channel header
 
-    $(".timeline-item").each((_i, el) => {
-      const $item = $(el);
+    for (const item of items) {
+      const title = this.extractTag(item, "title");
+      const link = this.extractTag(item, "link");
+      const pubDate = this.extractTag(item, "pubDate");
+      const creator = this.extractTag(item, "dc:creator");
+      const description = this.extractCdata(item, "description");
 
-      // Skip pinned tweets
-      if ($item.find(".pinned").length > 0) return;
+      if (!title && !description) continue;
 
-      const tweetLink = $item.find(".tweet-link").attr("href") || "";
-      const tweetId = tweetLink.split("/").pop()?.replace("#m", "") || "";
-      if (!tweetId) return;
+      // Extract tweet ID from the link URL
+      const tweetId = link?.match(/status\/(\d+)/)?.[1] || "";
+      if (!tweetId) continue;
 
-      const text = $item.find(".tweet-content").text().trim();
-      const authorName =
-        $item.find(".fullname").first().text().trim() || handle;
-      const dateStr = $item.find(".tweet-date a").attr("title") || "";
+      // Get clean text: prefer title (plain text), fallback to stripped description
+      const text = title || this.stripHtml(description || "");
 
-      const isRetweet = $item.find(".retweet-header").length > 0;
-      const isReply = $item.find(".replying-to").length > 0;
+      // Detect retweets: Nitter prefixes with "RT by @handle"
+      const isRetweet = text.startsWith("RT by @") || text.startsWith("RT @");
 
-      const metrics = this.parseMetrics($, $item);
-      const media = this.parseMedia($, $item);
+      // Detect replies: Nitter prefixes with "R to @handle"
+      const isReply = text.startsWith("R to @");
 
       tweets.push({
         id: tweetId,
-        text,
-        authorHandle: handle,
-        authorName,
-        publishedAt: dateStr ? new Date(dateStr) : new Date(),
+        text: this.cleanTweetText(text),
+        authorHandle: creator?.replace(/^@/, "") || handle,
+        authorName: handle,
+        publishedAt: pubDate ? new Date(pubDate) : new Date(),
         sourceUrl: `https://x.com/${handle}/status/${tweetId}`,
         source: "nitter",
-        metrics,
-        media,
         isRetweet,
         isReply,
-        language: null, // Detected later in the pipeline
+        language: null, // Detected downstream in ENRICH pipeline
       });
-    });
+    }
 
     return tweets;
   }
 
   /**
-   * Parse engagement metrics from a tweet element.
+   * Extract text content of a simple XML tag.
    */
-  private parseMetrics(
-    $: cheerio.CheerioAPI,
-    $item: cheerio.Cheerio<cheerio.Element>,
-  ): TweetMetrics {
-    const parseCount = (selector: string): number => {
-      const text = $item.find(selector).text().trim();
-      if (!text) return 0;
-      // Nitter shows counts like "1,234" or "12K"
-      const cleaned = text.replace(/,/g, "");
-      if (cleaned.endsWith("K")) return Math.round(parseFloat(cleaned) * 1_000);
-      if (cleaned.endsWith("M"))
-        return Math.round(parseFloat(cleaned) * 1_000_000);
-      return parseInt(cleaned, 10) || 0;
-    };
+  private extractTag(xml: string, tag: string): string | null {
+    // Handle CDATA content
+    const cdataRegex = new RegExp(
+      `<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]></${tag}>`,
+    );
+    const cdataMatch = xml.match(cdataRegex);
+    if (cdataMatch) return cdataMatch[1].trim();
 
-    return {
-      likes: parseCount(".icon-heart + span"),
-      retweets: parseCount(".icon-retweet + span"),
-      replies: parseCount(".icon-comment + span"),
-    };
+    // Handle regular text content
+    const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`);
+    const match = xml.match(regex);
+    return match ? match[1].trim() : null;
   }
 
   /**
-   * Parse media attachments from a tweet element.
+   * Extract CDATA content from a tag.
    */
-  private parseMedia(
-    $: cheerio.CheerioAPI,
-    $item: cheerio.Cheerio<cheerio.Element>,
-  ): TweetMedia[] {
-    const media: TweetMedia[] = [];
-
-    $item.find(".attachment.image img").each((_i, img) => {
-      const src = $(img).attr("src");
-      if (src) {
-        media.push({
-          type: "image",
-          url: src.startsWith("http") ? src : `${this.baseUrl}${src}`,
-        });
-      }
-    });
-
-    $item.find(".attachment.video").each(() => {
-      media.push({ type: "video", url: "" });
-    });
-
-    return media;
+  private extractCdata(xml: string, tag: string): string | null {
+    const regex = new RegExp(
+      `<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]></${tag}>`,
+    );
+    const match = xml.match(regex);
+    return match ? match[1].trim() : this.extractTag(xml, tag);
   }
 
   /**
-   * Extract the "show more" cursor for pagination.
+   * Strip HTML tags from a string.
    */
-  private extractCursor(html: string): string | null {
-    const $ = cheerio.load(html);
-    const showMore = $(".show-more a").last().attr("href");
-    if (!showMore) return null;
+  private stripHtml(html: string): string {
+    return html
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
 
-    const match = showMore.match(/cursor=([^&]+)/);
-    return match ? decodeURIComponent(match[1]) : null;
+  /**
+   * Clean up tweet text: remove RT/reply prefixes for cleaner storage.
+   */
+  private cleanTweetText(text: string): string {
+    return text
+      .replace(/^RT by @\w+:\s*/, "")
+      .replace(/^R to @\w+:\s*/, "")
+      .trim();
   }
 
   /**

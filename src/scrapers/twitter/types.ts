@@ -1,6 +1,6 @@
 /**
  * Types for the Twitter/X scraper module.
- * Supports Nitter (primary) and Apify (fallback) as data sources.
+ * Supports Nitter RSS (primary) and Apify (fallback) as data sources.
  */
 
 export interface Tweet {
@@ -11,22 +11,9 @@ export interface Tweet {
   publishedAt: Date;
   sourceUrl: string;
   source: "nitter" | "apify";
-  metrics: TweetMetrics;
-  media: TweetMedia[];
   isRetweet: boolean;
   isReply: boolean;
   language: string | null;
-}
-
-export interface TweetMetrics {
-  likes: number;
-  retweets: number;
-  replies: number;
-}
-
-export interface TweetMedia {
-  type: "image" | "video" | "gif";
-  url: string;
 }
 
 export interface ScraperResult {
@@ -34,8 +21,6 @@ export interface ScraperResult {
   handle: string;
   scrapedAt: Date;
   source: "nitter" | "apify";
-  hasMore: boolean;
-  cursor: string | null;
 }
 
 export interface ScraperError {
@@ -55,13 +40,13 @@ export interface TwitterScraperConfig {
   allowedLanguages: string[];
   /** Retry delay in ms before falling back to Apify */
   nitterRetryDelayMs: number;
-  /** Max Nitter retries before fallback */
+  /** Max Nitter retries (across all instances) before fallback */
   nitterMaxRetries: number;
 }
 
 export interface NitterConfig {
-  /** Self-hosted Nitter instance base URL */
-  instanceUrl: string;
+  /** List of public Nitter instance base URLs (tried in order) */
+  instanceUrls: string[];
   /** Request timeout in ms */
   timeoutMs: number;
   /** Delay between requests to avoid rate limiting */

@@ -1,14 +1,28 @@
 import type { TwitterScraperConfig } from "./types";
 
 /**
+ * Well-known public Nitter instances with RSS support.
+ * Ordered by reliability. The scraper tries them in sequence.
+ */
+const DEFAULT_NITTER_INSTANCES = [
+  "https://nitter.privacydev.net",
+  "https://nitter.poast.org",
+  "https://nitter.woodland.cafe",
+  "https://nitter.1d4.us",
+];
+
+/**
  * Default configuration for the Twitter/X scraper.
  * Override via environment variables in production.
  */
 export function loadTwitterScraperConfig(): TwitterScraperConfig {
+  const customInstances = process.env.NITTER_INSTANCE_URLS;
+
   return {
     nitter: {
-      instanceUrl:
-        process.env.NITTER_INSTANCE_URL || "http://localhost:8080",
+      instanceUrls: customInstances
+        ? customInstances.split(",").map((u) => u.trim())
+        : DEFAULT_NITTER_INSTANCES,
       timeoutMs: Number(process.env.NITTER_TIMEOUT_MS) || 10_000,
       delayBetweenRequestsMs:
         Number(process.env.NITTER_DELAY_MS) || 1_500,
@@ -25,6 +39,6 @@ export function loadTwitterScraperConfig(): TwitterScraperConfig {
     allowedLanguages: (process.env.TWITTER_LANGUAGES || "it").split(","),
     nitterRetryDelayMs:
       Number(process.env.NITTER_RETRY_DELAY_MS) || 2_000,
-    nitterMaxRetries: Number(process.env.NITTER_MAX_RETRIES) || 2,
+    nitterMaxRetries: Number(process.env.NITTER_MAX_RETRIES) || 3,
   };
 }
