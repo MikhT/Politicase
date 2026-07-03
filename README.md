@@ -413,27 +413,59 @@ I mockup interattivi sono disponibili in `mockups/index.html`:
 
 ---
 
+## Setup Locale
+
+```bash
+# 1. Dipendenze
+npm install
+
+# 2. Database (Docker, oppure un PostgreSQL 16 locale)
+docker compose up -d
+
+# 3. Schema
+export DATABASE_URL=postgres://politicase:politicase@localhost:5432/politicase
+npx drizzle-kit push
+
+# 4. Ingestione dati reali (605 parlamentari da fonti ufficiali)
+npm run seed
+
+# 5. News ANSA → dichiarazioni
+npm run ingest:news
+
+# 6. Avvio
+npm run dev
+```
+
+### Note sulle fonti
+
+- **dati.senato.it** — SPARQL diretto. Il WAF rifiuta query con predicati variabili (`?s ?p ?o`): usare sempre IRI espliciti. I mandati con URI `C_*` sono mandati *Camera* di ex-senatori: filtrare su `S_*`.
+- **dati.camera.it** — protetto da challenge JavaScript anti-bot (F5/Volterra): una proof-of-work SHA1 risolta automaticamente dal nostro `CameraClient`. Attenzione: il cookie di autorizzazione arriva in un redirect 301 — serve gestione manuale dei redirect.
+- **ANSA RSS** — feed pubblico. Il matching dei politici è volutamente conservativo (nome+cognome, o solo cognome se univoco e non parola comune) per evitare false attribuzioni.
+
+---
+
 ## Fasi di Sviluppo
 
-### Fase 1: Foundation (Settimane 1-3)
+### Fase 1: Foundation (Settimane 1-3) — ✅ COMPLETATA
 - [x] Mockup grafico interattivo
-- [ ] Setup Docker Compose (PostgreSQL + pgvector, Redis)
-- [ ] Inizializzazione Next.js 15 + Tailwind + shadcn/ui
-- [ ] Schema database con Drizzle ORM
-- [ ] Client SPARQL per dati.camera.it e dati.senato.it
-- [ ] Client REST Openpolis
-- [ ] Job sync parlamentari → database
-- [ ] Pagina lista politici + pagina profilo (solo dati)
+- [x] Setup Docker Compose (PostgreSQL + pgvector)
+- [x] Inizializzazione Next.js 15 + Tailwind
+- [x] Schema database con Drizzle ORM (politicians, parties, statements, coherence_scores)
+- [x] Client SPARQL per dati.camera.it (con solver challenge anti-bot) e dati.senato.it
+- [x] Job sync parlamentari → database (`npm run seed`: 400 deputati + 205 senatori reali)
+- [x] Pagina lista politici con ricerca/filtri + pagina profilo
+- [ ] Client REST Openpolis (arricchimento social, opzionale)
 
-**Deliverable:** Sito funzionante con lista di ~600 parlamentari
+**Deliverable:** ✅ Sito funzionante con 605 parlamentari in carica, dati live dalle fonti ufficiali
 
-### Fase 2: Statement Ingestion (Settimane 4-6)
-- [ ] Infrastruttura BullMQ + Redis per job queue
-- [ ] Scraper news (ANSA, Repubblica, Corriere) via RSS + estrazione articolo
-- [ ] Scraper trascrizioni parlamentari ufficiali
-- [ ] Normalizzazione: dedup, matching politici, pulizia testo
-- [ ] UI timeline dichiarazioni sul profilo politico
-- [ ] Popolamento dati partiti e collegamento politici
+### Fase 2: Statement Ingestion (Settimane 4-6) — IN CORSO
+- [x] Scraper news ANSA via RSS (`npm run ingest:news`)
+- [x] Matching politici conservativo (anti falsi-positivi, testato su dati reali)
+- [x] UI timeline dichiarazioni sul profilo politico + feed globale `/dichiarazioni`
+- [x] Popolamento gruppi parlamentari e collegamento politici
+- [ ] Altri feed (Repubblica, Corriere) + estrazione testo articolo completo
+- [ ] Scraper trascrizioni parlamentari (il Senato espone `osr:interviene` → interventi in aula)
+- [ ] Infrastruttura BullMQ + Redis per scheduling periodico
 
 **Deliverable:** Profili con dichiarazioni aggregate da news e parlamento
 
